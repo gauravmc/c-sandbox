@@ -33,5 +33,10 @@ int main(int argc, char *argv[])
   printf("foo is %d\n", isblank(bar));
   printf("foo is %d\n", isalpha(baz));
 
+  char *name = "Gaurav";
+  printf("address of name is %p\n", name);
+  printf("address of first element of name is %p\n", &name[0]);
+  printf("address of second element of name is %p\n", &name[1]);
+
   return 0;
 }
