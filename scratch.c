@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ctype.h>
 
 int main(int argc, char *argv[])
 {
@@ -25,6 +26,12 @@ int main(int argc, char *argv[])
   }
 
   printf("value of i after the loop %d\n", i);
+
+  char bar = '\0';
+  char baz = 'a';
+
+  printf("foo is %d\n", isblank(bar));
+  printf("foo is %d\n", isalpha(baz));
 
   return 0;
 }
