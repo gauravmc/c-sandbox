@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// A simple file-based database
 
 // API
 /* db create */
@@ -9,10 +7,48 @@
 /* db del 1 */
 /* db destroy */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_ROWS 100
+#define MAX_LENGTH 512
+
 void die(char *message)
 {
   printf("Error: %s\n", message);
   exit(1);
+}
+
+struct Record {
+  int id;
+  int set;
+  char name[MAX_LENGTH];
+  char email[MAX_LENGTH];
+};
+
+struct Database {
+  struct Record rows[MAX_ROWS];
+};
+
+void Database_create()
+{
+  struct Database *db = malloc(sizeof(struct Database));
+  int i;
+  for(i = 0; i < MAX_ROWS; i++) {
+    struct Record record = {.id = i+1, .set = 0};
+    db->rows[i] = record;
+  }
+
+  FILE *file;
+  file = fopen("db.dat", "w");
+  if(!file) die("Failed to open the file");
+
+  int rc = fwrite(db, sizeof(struct Database), 1, file);
+  if(rc != 1) die("Failed to write database.");
+
+  rc = fflush(file);
+  if(rc == -1) die("Cannot flush database.");
 }
 
 int main(int argc, char *argv[])
@@ -21,7 +57,7 @@ int main(int argc, char *argv[])
   char *action = argv[1];
 
   if(!strcmp(action, "create")) {
-    die("'create' action not implemented yet");
+    Database_create();
   } else {
     printf("Action %s is invalid. Actions allowed: create, get, set, del and destroy\n", action);
   }
