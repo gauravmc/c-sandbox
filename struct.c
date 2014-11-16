@@ -9,6 +9,10 @@ struct Person {
   char *profession;
 };
 
+struct Foo {
+  int bar;
+};
+
 struct Person* Person_create(char *name, int age, char *profession)
 {
   struct Person *person = malloc(sizeof(struct Person));
@@ -51,6 +55,11 @@ int main()
 
   Person_destroy(gaurav);
   Person_destroy(vinit);
+
+  struct Foo foob;
+
+  foob.bar = 42;
+  printf("variable bar of Foo is %d\n", foob.bar);
 
   return 0;
 }
