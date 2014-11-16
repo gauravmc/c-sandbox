@@ -49,6 +49,14 @@ void Database_create()
 
   rc = fflush(file);
   if(rc == -1) die("Cannot flush database.");
+
+  printf("Fresh database has been created\n");
+}
+
+void Database_destroy()
+{
+  remove("db.dat");
+  printf("Database has been destroyed. To re-create, 'db create'\n");
 }
 
 int main(int argc, char *argv[])
@@ -58,6 +66,8 @@ int main(int argc, char *argv[])
 
   if(!strcmp(action, "create")) {
     Database_create();
+  } else if(!strcmp(action, "destroy")) {
+    Database_destroy();
   } else {
     printf("Action %s is invalid. Actions allowed: create, get, set, del and destroy\n", action);
   }
