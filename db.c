@@ -12,7 +12,7 @@
 #include <string.h>
 
 #define MAX_ROWS 100
-#define MAX_LENGTH 512
+#define MAX_LENGTH 50
 
 void die(char *message)
 {
@@ -48,6 +48,15 @@ struct Connection *Connection_open()
   return conn;
 }
 
+void Database_write(struct Connection *conn)
+{
+  int rc = fwrite(conn->db, sizeof(struct Database), 1, conn->file);
+  if(rc != 1) die("Failed to write to database.");
+
+  rc = fflush(conn->file);
+  if(rc == -1) die("Cannot flush database.");
+}
+
 void Database_create(struct Connection *conn)
 {
   int i;
@@ -56,24 +65,33 @@ void Database_create(struct Connection *conn)
     conn->db->rows[i] = record;
   }
 
-  int rc = fwrite(conn->db, sizeof(struct Database), 1, conn->file);
-  if(rc != 1) die("Failed to write database.");
-
-  rc = fflush(conn->file);
-  if(rc == -1) die("Cannot flush database.");
-
+  Database_write(conn);
   printf("Fresh database has been created\n");
 }
 
-void Database_set(int id, const char* name, const char* email)
+void Database_set(struct Connection *conn, int id, const char* name, const char* email)
 {
-  printf("Given record %d, %s, %s\n", id, name, email);
+  struct Record *record = &conn->db->rows[id];
+  strncpy(record->name, name, MAX_LENGTH);
+  strncpy(record->email, email, MAX_LENGTH);
+  record->set = 1;
+
+  Database_write(conn);
 }
 
 void Database_destroy()
 {
   remove("db.dat");
   printf("Database has been destroyed. To re-create, 'db create'\n");
+}
+
+void Connection_close(struct Connection *conn)
+{
+  if(conn) {
+    if(conn->file) fclose(conn->file);
+    if(conn->db) free(conn->db);
+    free(conn);
+  }
 }
 
 int main(int argc, char *argv[])
@@ -94,12 +112,14 @@ int main(int argc, char *argv[])
     Database_create(conn);
   } else if(!strcmp(action, "set")) {
     if(argc != 5) die("Need id, name, email to set");
-    Database_set(id, argv[3], argv[4]);
+    Database_set(conn, id, argv[3], argv[4]);
   } else if(!strcmp(action, "destroy")) {
     Database_destroy();
   } else {
     printf("Action %s is invalid. Actions allowed: create, get, set, del and destroy\n", action);
   }
+
+  Connection_close(conn);
 
   return 0;
 }
