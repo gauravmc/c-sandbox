@@ -100,8 +100,9 @@ void Database_list()
 void Database_set(int id, const char* name, const char* email)
 {
   struct Record *record = &conn->db->rows[id];
-  strncpy(record->name, name, MAX_LENGTH);
-  strncpy(record->email, email, MAX_LENGTH);
+
+  record->name[MAX_LENGTH] = '\0'; strncpy(record->name, name, MAX_LENGTH - 1);
+  record->email[MAX_LENGTH] = '\0'; strncpy(record->email, email, MAX_LENGTH - 1);
   record->set = 1;
 
   Database_write(conn);
