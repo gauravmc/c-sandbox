@@ -2,6 +2,7 @@
 
 // API
 /* db create */
+/* db list */
 /* db set 1 Gaurav gmail@gauravchande.com */
 /* db get 1 */
 /* db del 1 */
@@ -83,6 +84,17 @@ void Database_create(struct Connection *conn)
   printf("Fresh database has been created\n");
 }
 
+void Database_list(struct Connection *conn)
+{
+  int i;
+  for(i = 0; i < MAX_ROWS; i++) {
+    struct Record *record = &conn->db->rows[i];
+    if (record->set) {
+      printf("%d %s %s\n", record->id, record->name, record->email);
+    }
+  }
+}
+
 void Database_set(struct Connection *conn, int id, const char* name, const char* email)
 {
   struct Record *record = &conn->db->rows[id];
@@ -141,19 +153,28 @@ int main(int argc, char *argv[])
 
   if(!strcmp(action, "create")) {
     Database_create(conn);
+
+  } else if(!strcmp(action, "list")) {
+    Database_list(conn);
+
   } else if(!strcmp(action, "set")) {
     if(argc != 5) die("Need id, name, email to set");
     Database_set(conn, id, argv[3], argv[4]);
+
   } else if(!strcmp(action, "get")) {
     if(argc != 3) die("Need id to fetch record");
     Database_get(conn, id);
+
   } else if(!strcmp(action, "del")) {
     if(argc != 3) die("Need id to delete record");
     Database_del(conn, id);
+
   } else if(!strcmp(action, "destroy")) {
     Database_destroy();
+
   } else {
     printf("Action %s is invalid. Actions allowed: create, get, set, del and destroy\n", action);
+
   }
 
   Connection_close(conn);
