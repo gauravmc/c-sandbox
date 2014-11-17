@@ -37,6 +37,8 @@ struct Connection {
   struct Database *db;
 };
 
+struct Connection *conn;
+
 void Database_load(struct Connection *conn)
 {
   int rc = fread(conn->db, sizeof(struct Database), 1, conn->file);
@@ -72,7 +74,7 @@ void Database_write(struct Connection *conn)
   if(rc == -1) die("Cannot flush database.");
 }
 
-void Database_create(struct Connection *conn)
+void Database_create()
 {
   int i;
   for(i = 0; i < MAX_ROWS; i++) {
@@ -84,7 +86,7 @@ void Database_create(struct Connection *conn)
   printf("Fresh database has been created\n");
 }
 
-void Database_list(struct Connection *conn)
+void Database_list()
 {
   int i;
   for(i = 0; i < MAX_ROWS; i++) {
@@ -95,7 +97,7 @@ void Database_list(struct Connection *conn)
   }
 }
 
-void Database_set(struct Connection *conn, int id, const char* name, const char* email)
+void Database_set(int id, const char* name, const char* email)
 {
   struct Record *record = &conn->db->rows[id];
   strncpy(record->name, name, MAX_LENGTH);
@@ -106,7 +108,7 @@ void Database_set(struct Connection *conn, int id, const char* name, const char*
   printf("Record saved at id=%d\n", record->id);
 }
 
-void Database_get(struct Connection *conn, int id)
+void Database_get(int id)
 {
   struct Record *record = &conn->db->rows[id];
   if(!record->set) die("Record with given id not been set");
@@ -114,7 +116,7 @@ void Database_get(struct Connection *conn, int id)
   printf("Fetched record: id=%d name=%s email=%s\n", record->id, record->name, record->email);
 }
 
-void Database_del(struct Connection *conn, int id)
+void Database_del(int id)
 {
   struct Record record = {.id = id, .set = 0};
   conn->db->rows[id] = record;
@@ -129,7 +131,7 @@ void Database_destroy()
   printf("Database has been destroyed. To re-create, 'db create'\n");
 }
 
-void Connection_close(struct Connection *conn)
+void Connection_close()
 {
   if(conn) {
     if(conn->file) fclose(conn->file);
@@ -142,7 +144,7 @@ int main(int argc, char *argv[])
 {
   if(argc < 2) die("Incorrect API call. API USAGE: db <action> [action params]");
   char *action = argv[1];
-  struct Connection *conn = Connection_open(action);
+  conn = Connection_open(action);
 
   int id = 0;
   if(argc > 2) {
@@ -150,24 +152,23 @@ int main(int argc, char *argv[])
     if(id >= MAX_ROWS) printf("Given id=%d is greater than total records.\n", id);
   }
 
-
   if(!strcmp(action, "create")) {
-    Database_create(conn);
+    Database_create();
 
   } else if(!strcmp(action, "list")) {
-    Database_list(conn);
+    Database_list();
 
   } else if(!strcmp(action, "set")) {
     if(argc != 5) die("Need id, name, email to set");
-    Database_set(conn, id, argv[3], argv[4]);
+    Database_set(id, argv[3], argv[4]);
 
   } else if(!strcmp(action, "get")) {
     if(argc != 3) die("Need id to fetch record");
-    Database_get(conn, id);
+    Database_get(id);
 
   } else if(!strcmp(action, "del")) {
     if(argc != 3) die("Need id to delete record");
-    Database_del(conn, id);
+    Database_del(id);
 
   } else if(!strcmp(action, "destroy")) {
     Database_destroy();
@@ -177,7 +178,7 @@ int main(int argc, char *argv[])
 
   }
 
-  Connection_close(conn);
+  Connection_close();
 
   return 0;
 }
