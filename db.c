@@ -102,6 +102,15 @@ void Database_get(struct Connection *conn, int id)
   printf("Fetched record: id=%d name=%s email=%s\n", record->id, record->name, record->email);
 }
 
+void Database_del(struct Connection *conn, int id)
+{
+  struct Record record = {.id = id, .set = 0};
+  conn->db->rows[id] = record;
+
+  Database_write(conn);
+  printf("Record at id=%d deleted.\n", id);
+}
+
 void Database_destroy()
 {
   remove("db.dat");
@@ -138,6 +147,9 @@ int main(int argc, char *argv[])
   } else if(!strcmp(action, "get")) {
     if(argc != 3) die("Need id to fetch record");
     Database_get(conn, id);
+  } else if(!strcmp(action, "del")) {
+    if(argc != 3) die("Need id to delete record");
+    Database_del(conn, id);
   } else if(!strcmp(action, "destroy")) {
     Database_destroy();
   } else {
