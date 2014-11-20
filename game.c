@@ -38,34 +38,11 @@ int process_input() {
   return 1;
 }
 
-typedef struct {
-  int score;
-  void (*desc)(void *self);
-} Object;
-
-void Object_desc(void *self)
-{
-  Object *obj = self;
-  printf("proto has score %d\n", obj->score);
-}
-
-typedef struct {
-  Object proto;
-} Foo;
-
-/* typedef struct Foo Foo; */
 
 int main()
 {
-  Object Foos_proto = {.score = 5, .desc = Object_desc};
-  Object *obj = malloc(sizeof(Foo));
-  *obj = Foos_proto;
-
-  Foo *foo = obj;
-  foo->proto.desc(foo);
-
-  /* while(process_input()) { */
-  /* } */
+  while(process_input()) {
+  }
 
   return 0;
 }

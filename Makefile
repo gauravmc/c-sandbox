@@ -1,4 +1,8 @@
 CFLAGS=-Wall -g
-all: hello ex_2
+
+all: game
+
+game: object.o
+
 clean:
-	rm -f hello ex_2
+	rm -f game
