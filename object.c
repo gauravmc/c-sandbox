@@ -28,7 +28,7 @@ void *Object_new(size_t size, Object proto, char *desc)
   if(!proto.destroy) proto.destroy = Object_destroy;
   proto.description = strdup(desc);
 
-  Object *obj = malloc(sizeof(size));
+  Object *obj = malloc(size);
   *obj = proto;
 
   if(obj->init(obj)) {

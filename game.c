@@ -11,12 +11,37 @@
 #include <stdlib.h>
 #include "game.h"
 
-Object GameProto;
+Object RoomProto;
 
-void Game_move_player(Direction direction)
+int Game_init(void *self)
 {
-  if(direction == N) printf("Game moved player to North.\n");
+  Game *game = self;
+  Room *reception = NEW(Room, "You're at the reception");
+  Room *hats_room = NEW(Room, "You're in a room full of crazy, and some scary hats");
+
+  reception->north = hats_room;
+  game->current_room = reception;
+
+  return 1;
 }
+
+void Game_move_player(void *self, Direction direction)
+{
+  Game *game = self;
+
+  if(direction == N) {
+    if (game->current_room->north) {
+      game->current_room = game->current_room->north;
+      game->current_room->proto.describe(game->current_room);
+    } else {
+      printf("Can't go that way\n");
+    }
+  }
+}
+
+Object GameProto = {
+  .init = Game_init
+};
 
 Game *Game_new()
 {
@@ -35,7 +60,7 @@ int process_input(Game *game) {
       return 0;
       break;
     case 'n':
-      game->move_player(N);
+      game->move_player(game, N);
       break;
     case 's':
       printf("South\n");

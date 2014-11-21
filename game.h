@@ -5,12 +5,24 @@
 
 typedef enum {N, E, W, S} Direction;
 
+struct Room {
+  Object proto;
+
+  struct Room *north;
+  struct Room *south;
+  struct Room *east;
+  struct Room *west;
+};
+typedef struct Room Room;
+
 typedef struct {
   Object proto;
-  void (*move_player)();
+  Room *current_room;
+  void (*move_player)(void *self, Direction direction);
 } Game;
 
-void Game_move_player(Direction direction);
+int Game_init(void *self);
+void Game_move_player(void *self, Direction direction);
 Game *Game_new();
 
 #endif
