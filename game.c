@@ -9,14 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "object.h"
-
-typedef enum {N, E, W, S} Direction;
-
-typedef struct {
-  Object proto;
-  void (*move_player)();
-} Game;
+#include "game.h"
 
 Object GameProto;
 
