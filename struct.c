@@ -42,6 +42,11 @@ void Person_destroy(struct Person *person)
   printf("%s was freed from memory\n", name);
 }
 
+void print_bar(struct Foo foo)
+{
+  printf("variable bar of Foo is %d\n", foo.bar);
+}
+
 int main()
 {
   struct Person *gaurav = Person_create("Gaurav", 25, "programmer");
@@ -56,10 +61,8 @@ int main()
   Person_destroy(gaurav);
   Person_destroy(vinit);
 
-  struct Foo foob;
-
-  foob.bar = 42;
-  printf("variable bar of Foo is %d\n", foob.bar);
+  struct Foo foob = { .bar = 42 };
+  print_bar(foob);
 
   return 0;
 }
